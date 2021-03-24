@@ -7,6 +7,8 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.ossovita.retrofitexample.api.JsonPlaceHolderApi;
 import com.ossovita.retrofitexample.model.Comment;
 import com.ossovita.retrofitexample.model.Post;
@@ -43,8 +45,59 @@ public class MainActivity extends AppCompatActivity {
         
         //getPosts();
         //getComments();
-        createPost();
+        //createPost();
+        //updatePost();
+        deletePost();
+    }
 
+    private void deletePost() {
+        Call<Void> call = jsonPlaceHolderApi.deletePost(1);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if(!response.isSuccessful()){
+                    return;
+                }
+                textViewResult.setText("Code: " + response.code());
+
+
+
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void updatePost() {
+        Post post = new Post(16,null,"Sixteenth text");
+        Call<Post> call = jsonPlaceHolderApi.patchPost(14,post);
+        call.enqueue(new Callback<Post>() {
+            @Override
+            public void onResponse(Call<Post> call, Response<Post> response) {
+                if(!response.isSuccessful()){
+                    Toast.makeText(MainActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Post postResponse = response.body();//güncellenen verinin bilgilerini postResponse'a attık
+
+                String content ="";
+                content += "Code:" + response.code()+"\n";//response'dan gelen kodu yazdıracak
+                content += "ID: " + postResponse.getId() + "\n";
+                content += "User ID: " + postResponse.getUserId() + "\n";
+                content += "Title: " + postResponse.getTitle() + "\n";
+                content += "Text: " + postResponse.getText() + "\n\n";
+
+                textViewResult.append(content);
+            }
+
+            @Override
+            public void onFailure(Call<Post> call, Throwable t) {
+
+            }
+        });
     }
 
     private void createPost() {
