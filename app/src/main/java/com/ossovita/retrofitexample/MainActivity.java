@@ -84,7 +84,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void updatePost()   {
         Post post = new Post(16,null,"Sixteenth text");
-        Call<Post> call = jsonPlaceHolderApi.putPost("abc",5,post);
+        Map<String,String> header = new HashMap<>();
+        header.put("Map-Header1","def");
+        header.put("Map-Header2","ghi");
+        Call<Post> call = jsonPlaceHolderApi.patchPost(header,5,post);
         call.enqueue(new Callback<Post>() {
             @Override
             public void onResponse(Call<Post> call, Response<Post> response) {
